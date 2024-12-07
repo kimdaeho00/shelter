@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대화하기</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>두 사람 간의 대화</h1>
+
+        <!-- 대화 내용 표시 영역 -->
+        <div id="chatBox" class="chat-box">
+            <div class="messages" id="messages">
+                <!-- 대화 내용이 이곳에 동적으로 추가됩니다. -->
+            </div>
+
+            <!-- 메시지 입력창과 보내기 버튼을 가로로 배치 -->
+            <div class="input-container">
+                <input type="text" id="userMessage" placeholder="메시지를 입력하세요..." autocomplete="off">
+                <button id="sendMessage">보내기</button>
+            </div>
+        </div>
+
+        <!-- 메인 화면으로 돌아가기 버튼 -->
+        <div class="back-to-main">
+            <button onclick="window.location.href='/'">메인 화면으로 돌아가기</button>
+        </div>
+
+        <!-- 다크모드 버튼 -->
+        <div class="dark-mode-toggle">
+            <button id="darkModeBtn">다크 모드</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <script>
+        // 다크모드 토글 기능
+        const darkModeBtn = document.getElementById('darkModeBtn');
+        const body = document.body;
+        const chatBox = document.getElementById('chatBox');
+        const messages = document.getElementById('messages');
+        const userMessageInput = document.getElementById('userMessage');
+        const sendButton = document.getElementById('sendMessage');
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+        // 페이지 로딩 시 다크모드 설정
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            chatBox.classList.add('dark-mode');
+            messages.classList.add('dark-mode');
+            userMessageInput.classList.add('dark-mode');
+            sendButton.classList.add('dark-mode');
+            darkModeBtn.classList.add('dark-mode');
+            darkModeBtn.textContent = '라이트 모드';
+        } else {
+            darkModeBtn.textContent = '다크 모드';
+        }
+
+        // 다크모드 버튼 클릭 시 처리
+        darkModeBtn.addEventListener('click', function () {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('darkMode', isDarkMode);  // 다크모드 상태 로컬 스토리지에 저장
+
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                chatBox.classList.add('dark-mode');
+                messages.classList.add('dark-mode');
+                userMessageInput.classList.add('dark-mode');
+                sendButton.classList.add('dark-mode');
+                darkModeBtn.classList.add('dark-mode');
+                darkModeBtn.textContent = '라이트 모드';
+            } else {
+                body.classList.remove('dark-mode');
+                chatBox.classList.remove('dark-mode');
+                messages.classList.remove('dark-mode');
+                userMessageInput.classList.remove('dark-mode');
+                sendButton.classList.remove('dark-mode');
+                darkModeBtn.classList.remove('dark-mode');
+                darkModeBtn.textContent = '다크 모드';
+            }
+        });
+
+        // 메시지 전송
+        document.getElementById("sendMessage").addEventListener("click", function() {
+            var userMessage = document.getElementById("userMessage").value;
+            if (userMessage.trim()) {
+                // 서버에 메시지 전송 (여기선 WebSocket 사용한다고 가정)
+                socket.send(userMessage);
+
+                // 화면에 메시지 추가 (사용자 메시지)
+                var messageElement = document.createElement("div");
+                messageElement.classList.add("message", "user-message");
+                messageElement.textContent = "나: " + userMessage;
+                document.getElementById("messages").appendChild(messageElement);
+
+                // 입력창 초기화
+                document.getElementById("userMessage").value = '';
+                document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+            }
+        });
+
+        // 서버로부터 메시지 받기 (WebSocket 사용 시)
+        socket.on('message', function(msg) {
+            var messageElement = document.createElement("div");
+            messageElement.classList.add("message", "other-message");
+            messageElement.textContent = "상대방: " + msg;
+            document.getElementById("messages").appendChild(messageElement);
+            document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+        });
+    </script>
+</body>
+</html>

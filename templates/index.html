@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>당신의 인생길에 놓여있는 쉼터</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>당신의 인생길에 놓여있는 쉼터</h1>
+
+        <!-- 다크모드 버튼 -->
+        <div class="dark-mode-toggle">
+            <button id="darkModeBtn">다크 모드</button>
+        </div>
+
+        <div>
+            <a href="/chat"><button>대화하기</button></a>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <script>
+        // 다크모드 토글 버튼
+        const darkModeBtn = document.getElementById('darkModeBtn');
+
+        // 다크모드 상태 확인
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+        // 초기 다크모드 상태 적용
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+            darkModeBtn.classList.add('dark-mode');
+            darkModeBtn.textContent = '라이트 모드';
+        }
+
+        // 버튼 클릭 시 다크모드 토글
+        darkModeBtn.addEventListener('click', function () {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('darkMode', isDarkMode);
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeBtn.classList.add('dark-mode');
+                darkModeBtn.textContent = '라이트 모드';
+            } else {
+                document.body.classList.remove('dark-mode');
+                darkModeBtn.classList.remove('dark-mode');
+                darkModeBtn.textContent = '다크 모드';
+            }
+        });
+    </script>
+</body>
+</html>
